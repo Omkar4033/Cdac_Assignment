@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="FoodCategories">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="Description" Type="nvarchar" MaxLength="255" />
+  </EntityType>
+  <EntityType Name="FoodItems">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="Price" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+    <Property Name="IsVegetarian" Type="bit" Nullable="false" />
+    <Property Name="Calories" Type="int" />
+    <Property Name="CreatedAt" Type="datetime" />
+    <Property Name="CategoryId" Type="int" />
+    <Property Name="Description" Type="nvarchar(max)" />
+    <Property Name="SpicinessLevel" Type="int" />
+    <Property Name="ImagePath" Type="nvarchar" MaxLength="255" />
+    <Property Name="Ratings" Type="int" />
+    <Property Name="MobileNo" Type="varchar" MaxLength="15" />
+    <Property Name="Email" Type="nvarchar" MaxLength="100" />
+  </EntityType>
+  <Association Name="FK_FoodItems_FoodCategories">
+    <End Role="FoodCategories" Type="Self.FoodCategories" Multiplicity="0..1" />
+    <End Role="FoodItems" Type="Self.FoodItems" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="FoodCategories">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="FoodItems">
+        <PropertyRef Name="CategoryId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="ModelStoreContainer">
+    <EntitySet Name="FoodCategories" EntityType="Self.FoodCategories" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="FoodItems" EntityType="Self.FoodItems" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_FoodItems_FoodCategories" Association="Self.FK_FoodItems_FoodCategories">
+      <End Role="FoodCategories" EntitySet="FoodCategories" />
+      <End Role="FoodItems" EntitySet="FoodItems" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

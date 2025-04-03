@@ -1,0 +1,146 @@
+﻿@{
+    ViewBag.Title = "Food Items";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card shadow-lg rounded-3 border-0">
+                <div class="card-header bg-warning text-white text-center">
+                    <h4 class="mb-0">Food Items</h4>
+                </div>
+                <div class="card-body bg-light p-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="text-secondary">List of Available Food Items</h5>
+                        <a href="@Url.Action("AddFoodItem", "Food")" class="btn btn-warning">Add New Food</a>
+                    </div>
+
+
+                    <table id="foodItemsTable"></table>
+                    <div id="pager"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+
+    .custom-header {
+        background-color: #9ACBD0 !important;
+        color: #333 !important;
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+</style>
+
+
+
+<script>
+    $(document).ready(function () {
+       $("#foodItemsTable").jqGrid({
+    url: '@Url.Action("GetFoodItems", "Food")',
+    datatype: "json",
+    mtype: "GET",
+    colNames: ["ID", "Food Name", "Category", "Price", "Type", "Calories", "Mobile No", "Email", "Description", "Image","Rating", "Created At", "Actions"],
+    colModel: [
+        { name: "Id", key: true, hidden: true, align: "center" },
+        { name: "Name", width: 220, align: "center" },
+        { name: "CategoryName", width: 180, align: "center" },
+        { name: "Price", width: 80, align: "center" },
+        {
+            name: "IsVegetarian",
+            width: 200,
+            align: "center",
+            formatter: function (cellvalue) {
+                return cellvalue ? "<span class='badge bg-success'>Vegetarian</span>" : "<span class='badge bg-danger'>Non-Vegetarian</span>";
+            }
+        },
+        { name: "Calories", width: 100, align: "center" },
+        { name: "MobileNo", width: 120, align: "center" },
+        { name: "Email", width: 300, align: "center" },
+        { name: "Description", width: 200, align: "center" },
+        {
+            name: "ImageUrl",
+            width: 150,
+            align: "center",
+            formatter: function (cellvalue) {
+                if (!cellvalue) {
+                    return "<span class='text-muted'>No Image</span>";
+                }
+
+                let imageUrl = cellvalue.startsWith("http") ? cellvalue : "/FoodImages/" + cellvalue;
+
+                return "<img src='" + imageUrl + "' class='img-thumbnail' style='width: 60px; height: 60px;'>";
+            }
+        },
+
+        { name: "Rating", width: 80, align: "center" },
+        {
+            name: "CreatedAt",
+            width: 140,
+            align: "center",
+            formatter: function (cellvalue) {
+                if (!cellvalue) return "";
+                let date = new Date(parseInt(cellvalue.substr(6)));
+                return date.toLocaleDateString();
+            }
+        },
+        {
+            name: "Actions",
+            width: 250,
+            align: "center",
+            sortable: false,
+            formatter: function (cellvalue, options, rowObject) {
+                return `<div style="display: flex; justify-content: center; gap: 5px;">
+                <a href='/Food/UpdateFoodItem/${rowObject.Id}' class='btn btn-sm btn-primary'>Edit</a>
+                <button class='btn btn-sm btn-danger delete-food-btn' data-id='${rowObject.Id}'>Delete</button>
+            </div>`;
+            }
+        }
+    ],
+    pager: "#pager",
+    rowNum: 5,
+     rowList: [5, 10, 15],
+    sortname: "CreatedAt",
+    sortorder: "desc",
+    height: "auto",
+    viewrecords: false,
+    gridview: true,
+    autowidth: true,
+    rownumbers: true,
+    multiselect: false,
+    loadonce: false,
+    pgbuttons: true,
+    pginput: true,
+    gridComplete: function () {
+     $(".ui-jqgrid-htable th").addClass("custom-header");
+           }
+
+       });
+
+
+
+
+
+
+        $(document).on("click", ".delete-food-btn", function () {
+            var foodId = $(this).data("id");
+
+            if (confirm("Are you sure you want to delete this food item?")) {
+                $.ajax({
+                    url: '@Url.Action("ConfirmDeleteFoodItem", "Food")',
+                    type: "POST",
+                    data: { id: foodId },
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function () {
+                        alert("An error occurred while deleting the food item.");
+                    }
+                });
+            }
+        });
+    });
+</script>

@@ -1,0 +1,233 @@
+﻿@using System.Web
+
+@model Assignment.DTOs.FoodItemDTO
+@{
+    ViewBag.Title = "Update Food Item";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg rounded-4 border-0">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0"><i class="fas fa-utensils"></i>  Update Food Item</h4>
+                </div>
+                <div class="card-body bg-light p-4">
+                    <form id="foodForm" enctype="multipart/form-data" method="post" asp-action="UpdateFoodItem" asp-controller="Food">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Name" class="form-label">Food Name </label>
+                                    <input asp-for="Name" value="@Model.Name" name="Name" class="form-control" placeholder="Enter food name" required>
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="CategoryId" class="form-label">Category </label>
+                                    <select asp-for="CategoryId" name="CategoryId" class="form-control" id="Category" data-url='@Url.Action("GetFoodCategories", "Food")' required>
+
+                                        <option value="@Model.CategoryId">@Model.CategoryName</option>
+                                    </select>
+
+
+                                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Price" class="form-label">Price </label>
+                                    <input asp-for="Price" value="@Model.Price" name="Price" type="number" class="form-control" required min="1">
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="MobileNo" class="form-label">Mobile Number </label>
+                                    <input asp-for="MobileNo" value="@Model.MobileNo" name="MobileNo" type="tel" class="form-control" placeholder="Enter mobile number" required>
+                                    <span asp-validation-for="MobileNo" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Email" class="form-label">Email </label>
+                                    <input asp-for="Email" name="Email" value="@Model.Email" type="email" class="form-control" placeholder="Enter email" required>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Type </label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input asp-for="IsVegetarian" name="IsVegetarian" class="form-check-input" type="radio" value="true" @(Model.IsVegetarian ? "checked" : "")>
+                                            <label class="form-check-label">Vegetarian</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input asp-for="IsVegetarian" name="IsVegetarian" class="form-check-input" type="radio" value="false" @(!Model.IsVegetarian ? "checked" : "")>
+                                            <label class="form-check-label">Non-Vegetarian</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Upload Food Image </label>
+                                    <input type="file" class="form-control" value="@Model.ImageUrl" name="ImageFile" id="imageInput" accept="image/*" >
+                       
+                                    <img id="imagePreview"  src="@Url.Content(Model.ImageUrl)" class="img-fluid rounded @(string.IsNullOrEmpty(Model.ImageUrl) ? "d-none" : "") mt-2" style="max-width: 200px; border: 1px solid #ddd;">
+
+                                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                </div>
+
+
+
+
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Calories" class="form-label">Calories</label>
+                                    <input asp-for="Calories" value="@Model.Calories" name="Calories" type="number" class="form-control" required>
+                                    <span asp-validation-for="Calories" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Description" class="form-label">Description</label>
+                                    <textarea asp-for="Description" name="Description" class="form-control" rows="3" placeholder="Enter food description">@Model.Description</textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Rating" class="form-label">Rating</label>
+                                    <input name="Rating" value="@Model.Rating" asp-for="Rating" type="number" class="form-control" min="1" max="5" step="1" placeholder="Enter rating (1-5)" required>
+                                    <span asp-validation-for="Rating" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-plus-circle"></i> Update Food Item
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js" defer></script>
+}
+<script>
+    $(document).ready(function () {
+
+        $("form .form-group").each(function () {
+            var label = $(this).find("label");
+            var input = $(this).find("input, select, textarea");
+
+            if (input.prop("required")) {
+                label.append('<span class="text-danger">*</span>');
+            }
+        });
+
+        $.validator.addMethod("lettersOnly", function (value, element) {
+            return this.optional(element) || /^[a-zA-Z ]+$/.test(value);
+        }, "Please enter only letters.");
+
+        $("#foodForm").validate({
+            rules: {
+                Name: { required: true, minlength: 3, maxlength: 50, lettersOnly: true },
+                Price: { required: true, number: true, min: 1, max: 10000000 },
+                MobileNo: { required: true, digits: true, minlength: 10, maxlength: 10 },
+                Email: { required: true, email: true },
+                ImageUrl: { required: true, extension: "jpg,jpeg,png" },
+                Calories: { required: false, number: true, min: 1, max: 100000 },
+                Rating: { required: false, number: true, min: 1, max: 5, step: 1 },
+                Description: { required: false, minlength: 5, maxlength: 200 },
+                CategoryId: { required: true }
+            },
+            messages: {
+                Name: { required: "Please enter the food name", minlength: "At least 3 characters required", maxlength: " Maximum size can be 50", lettersOnly: "Name can contain only letters." },
+                Price: { required: "Please enter a price", number: "Only numbers allowed", min: "Minimum value is 1", max: "Maximum value is 10000000" },
+                MobileNo: { required: "Please enter a mobile number", digits: "Only numbers allowed", minlength: "Enter exactly 10 digits", maxlength: "Enter exactly 10 digits" },
+                Email: { required: "Please enter an email", email: "Enter a valid email address" },
+                ImageUrl: { required: "Please upload an image", extension: "Allowed formats: JPG, JPEG, PNG" },
+                Calories: { number: "Only numbers allowed", min: "Minimum calorie count is 1", max: "Maximum value is 1000000" },
+                Rating: { number: "Only numbers allowed", min: "Minimum rating is 1", max: "Maximum rating is 5", step: "Rating must be whole numbers" },
+                Description: { minlength: "At least 5 characters required", maxlength: " 200 characters is max size" },
+                CategoryId: { required: "Please select a category" }
+            },
+            errorClass: "text-danger",
+            highlight: function (el) {
+                $(el).closest(".form-group").addClass("has-error");
+            },
+            unhighlight: function (el) {
+                $(el).closest(".form-group").removeClass("has-error");
+            },
+            onfocusout: function (element) {
+                $(element).valid();
+            }
+        });
+
+
+        $("#foodForm").on("submit", function (e) {
+            e.preventDefault();
+
+            if ($("#foodForm").valid()) {
+
+                this.submit();
+
+            } else {
+                alert("Please fill all the details correctly before submitting.");
+            }
+        });
+
+
+        $("#foodForm input, #foodForm select ").on("change keyup", function () {
+            $(this).valid();
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        let categoryDropdown = $("#Category");
+        categoryDropdown.one("focus", function () {
+            $.ajax({
+                url: categoryDropdown.data("url"),
+                type: "GET",
+                dataType: "json",
+                success: function (categories) {
+                    categoryDropdown.empty().append('<option value="">Select a Category</option>');
+                    $.each(categories, function (index, category) {
+                    let selected = category.Id == '@Model.CategoryId' ? 'selected' : '';
+                    categoryDropdown.append(`<option value="${category.Id}" ${selected}>${category.Name}</option>`);
+                });
+                },
+                error: function () {
+                    alert("Failed to load categories.");
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    $("#imageInput").on("change", function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                $("#imagePreview").attr("src", e.target.result).removeClass("d-none");
+                $("#imageName").text(file.name);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            $("#imagePreview").addClass("d-none");
+        }
+    });
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
