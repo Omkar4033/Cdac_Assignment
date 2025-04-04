@@ -130,6 +130,8 @@ namespace Assignment.Controllers
                     return Json(new { success = false, message = "Food item not found." });
                 }
 
+                
+
                 foodService.DeleteFoodItem(id);
                 return Json(new { success = true });
             }

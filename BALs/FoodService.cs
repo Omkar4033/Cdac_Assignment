@@ -130,15 +130,41 @@ namespace Assignment.DALs
                 foodItem.Calories = foodItemDto.Calories;
                 foodItem.Ratings = foodItemDto.Rating;
 
-                if (ImageFile != null)
+                string newFile = Path.GetFileName(ImageFile.FileName);
+                string prevFile = foodItem.ImagePath;
+               
+                string uploadPath = System.Configuration.ConfigurationManager.AppSettings["ImageFolder"].ToString();
+                if (prevFile != null)
                 {
-                    string fileName = Path.GetFileName(ImageFile.FileName);
-                    string filePath = Path.Combine("C:\\Users\\91883\\Downloads\\CDAC WORK\\FoodImages", fileName);
 
 
-                    ImageFile.SaveAs(filePath);
-                    foodItem.ImagePath = "http://localhost/FoodImages/" + fileName;
+
+
+                    if (uploadPath != null && prevFile != null)
+                    {
+
+                        string[] parts = prevFile.Split('/');
+                        prevFile = parts[parts.Length - 1];
+                        string filePath = Path.Combine(uploadPath, prevFile);
+
+
+                        if (File.Exists(filePath))
+                        {
+                            File.Delete(filePath);
+                        }
+                    }
+
                 }
+
+                string newFilePath = Path.Combine(uploadPath, newFile);
+
+                ImageFile.SaveAs(newFilePath);
+                foodItem.ImagePath = "http://localhost/FoodImages/" + newFile;
+
+
+
+
+
 
                 foodRepository.UpdateFoodItem(foodItem);
             }
@@ -148,6 +174,8 @@ namespace Assignment.DALs
             }
         }
 
+
+
         public void DeleteFoodItem(int id)
         {
             try
@@ -156,13 +184,13 @@ namespace Assignment.DALs
                 if (foodItem == null)
                     throw new KeyNotFoundException("Food item not found.");
 
-               
-                string uploadPath = ConfigurationManager.AppSettings["ImageUploadPath"];
+
+                string uploadPath = "C:\\Users\\91883\\Downloads\\CDAC WORK\\FoodImages";
                 string fileName = Path.GetFileName(foodItem.ImagePath);
 
                 if (uploadPath != null && fileName != null)
                 {
-                   
+
 
                     string filePath = Path.Combine(uploadPath, fileName);
 
@@ -172,10 +200,10 @@ namespace Assignment.DALs
                         File.Delete(filePath);
                     }
                 }
-              
-                
 
-                
+
+
+
                 foodRepository.Delete(id);
             }
             catch (Exception ex)
@@ -183,6 +211,8 @@ namespace Assignment.DALs
                 throw new Exception("Error deleting food item.", ex);
             }
         }
+
+
 
 
         public (List<FoodItemDTO> foodItems, int totalRecords, int totalPages) GetPaginatedFoodItems(int currentPage, int pageSize)
